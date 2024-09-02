@@ -11,6 +11,7 @@ import { useRef } from "react";
 interface Props {
   title: string;
   cols: string[];
+  loading: boolean;
   rows: string[][];
   hideInMobile?: number[];
   onView: (id: number) => void;
@@ -18,19 +19,20 @@ interface Props {
 }
 
 export const Table = ({
-  cols,
-  rows,
+  cols = [],
+  rows = [],
   title,
   onView,
   onRemove,
   hideInMobile,
+  loading = false,
 }: Props) => {
   const [query, setQuery] = useState("");
   const [searchBy, setSearchBy] = useState(0);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const rowsData = rows.filter((row) =>
+  const rowsData = rows?.filter((row) =>
     row[searchBy].toLowerCase().includes(query.toLowerCase()),
   );
 
@@ -55,82 +57,90 @@ export const Table = ({
             value={searchBy}
             onChange={(e) => setSearchBy(Number(e.target.value))}
             options={cols
-              .slice(0, -1)
+              .slice(0, -2)
               .map((col, i) => ({ value: col, key: String(i) }))}
           />
 
-          <Button primary label="Buscar" />
+          <Button loading={loading} primary label="Buscar" />
         </div>
       </nav>
 
-      <table className="border-separate rounded-[8px] w-full border-spacing-0 my-7 bg-[#161A22] max-w-[1280px] text-[#9CA3AF] border border-[#374151]">
-        <thead className="h-[48px] bg-[#2F3646]">
-          <tr className="">
-            {cols.map((col, i) => (
-              <th
-                key={i}
-                className={cn(
-                  "text-start p-[12px_15px]",
-                  hideInMobile?.includes(i) && "hidden lg:table-cell",
-                )}
-              >
-                {col}
-              </th>
-            ))}
-          </tr>
-        </thead>
-
-        <tbody>
-          {rowsData.length === 0 && (
-            <tr>
-              <td
-                colSpan={cols.length}
-                className="text-center p-[12px_15px] text-[#9CA3AF]"
-              >
-                No se encontraron resultados
-              </td>
-            </tr>
-          )}
-
-          {rowsData.map((row, i) => (
-            <tr key={i} className="h-[56px] p-[4px_10px]">
-              {row.map((cell, j) => (
-                <td
-                  key={j}
+      {loading ? (
+        <Skeleton />
+      ) : (
+        <table className="border-separate rounded-[8px] w-full border-spacing-0 my-7 bg-[#161A22] max-w-[1280px] text-[#9CA3AF] border border-[#374151]">
+          <thead className="h-[48px] bg-[#2F3646]">
+            <tr className="">
+              {cols?.map((col, i) => (
+                <th
+                  key={i}
                   className={cn(
-                    searchBy === j && "bg-[#2F3646]",
-                    "p-[12px_15px] border-b border-[#374151]",
-                    hideInMobile?.includes(j) && "hidden lg:table-cell",
+                    "text-start p-[12px_15px]",
+                    hideInMobile?.includes(i) && "hidden lg:table-cell",
                   )}
                 >
-                  {cell}
-                </td>
+                  {col}
+                </th>
               ))}
-
-              {/* Actions */}
-              <td className="border-b border-[#374151]">
-                <div className="flex justify-center items-center space-x-3">
-                  <button
-                    type="button"
-                    className="p-3"
-                    onClick={() => onView(i)}
-                  >
-                    <Eye size={16} />
-                  </button>
-
-                  <button
-                    type="button"
-                    className="p-3"
-                    onClick={() => onRemove(i)}
-                  >
-                    <Trash size={16} />
-                  </button>
-                </div>
-              </td>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {rowsData?.length === 0 && (
+              <tr>
+                <td
+                  colSpan={cols?.length}
+                  className="text-center p-[12px_15px] text-[#9CA3AF]"
+                >
+                  No se encontraron resultados
+                </td>
+              </tr>
+            )}
+
+            {rowsData.map((row, i) => (
+              <tr key={i} className="h-[56px] p-[4px_10px]">
+                {row.map((cell, j) => (
+                  <td
+                    key={j}
+                    className={cn(
+                      searchBy === j && "bg-[#2F3646]",
+                      "p-[12px_15px] border-b border-[#374151]",
+                      hideInMobile?.includes(j) && "hidden lg:table-cell",
+                    )}
+                  >
+                    {cell}
+                  </td>
+                ))}
+
+                {/* Actions */}
+                <td className="border-b border-[#374151]">
+                  <div className="flex justify-center items-center space-x-3">
+                    <button
+                      type="button"
+                      className="p-3"
+                      onClick={() => onView(i)}
+                    >
+                      <Eye size={16} />
+                    </button>
+
+                    <button
+                      type="button"
+                      className="p-3"
+                      onClick={() => onRemove(i)}
+                    >
+                      <Trash size={16} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </>
   );
 };
+
+const Skeleton = () => (
+  <div className="animate-pulse my-7 bg-gray-50/10 h-[350px] rounded-lg w-full max-w-[1280px]"></div>
+);

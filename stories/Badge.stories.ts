@@ -4,6 +4,7 @@ import { Meta, StoryObj } from "@storybook/react";
 const meta: Meta = {
   title: "Example/Badge",
   component: Badge,
+  tags: ["autodocs"],
   parameters: {
     layout: "centered",
   },

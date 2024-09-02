@@ -1,9 +1,9 @@
 import cn from "classnames";
 import {
-  ChevronRight,
   ChevronLeft,
-  ChevronsRight,
+  ChevronRight,
   ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react";
 import { useEffect } from "react";
 

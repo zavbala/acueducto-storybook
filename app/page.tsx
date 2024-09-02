@@ -9,7 +9,7 @@ import { Logo } from "@/stories/Logo";
 import { Modal } from "@/stories/Modal";
 import { Paginator } from "@/stories/Paginator";
 import { Table } from "@/stories/Table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Cols = [
   "Nombre",
@@ -29,8 +29,17 @@ const StatusesVariant = {
 };
 
 const Home = () => {
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentOrder, setCurrentOrder] = useState<number | null>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const currentOrderData = Clients.find((client) => client.id === currentOrder);
 
@@ -45,6 +54,7 @@ const Home = () => {
         <Table
           cols={Cols}
           title="Clientes"
+          loading={loading}
           hideInMobile={[1, 2, 4]}
           onRemove={(id) => {}}
           onView={(id) => setCurrentOrder(id)}
